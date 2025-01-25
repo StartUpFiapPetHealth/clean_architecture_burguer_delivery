@@ -1,4 +1,10 @@
+@import "tailwindcss";
+
+@theme {
+    --color-black-primary: #1F1F1F;
+    --color-yellow-primary: #FCB800;
+}
+
 * {
-    font-family: 'Roboto', sans-serif;
-    margin: 0;
+    font-family: 'Montserrat', sans-serif;
 }
