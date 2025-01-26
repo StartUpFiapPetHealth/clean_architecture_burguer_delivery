@@ -1,6 +1,28 @@
-import banner from '../../../assets/banner.png'
+import React, { useEffect, useState } from 'react';
+import banner from '../../../assets/banner.png';
+import { Burger } from '../../../domain/usecases/loadBurgers';
+import { makeLoadBurgers } from '../../../main/factories/usecases/loadBurgersFactory';
+
 
 export const Home = () => {
+    const [burgers, setBurgers] = useState<Burger[]>([]);
+    const [error, setError] = useState('');
+  
+    useEffect(() => {
+      const loadBurgers = makeLoadBurgers();
+  
+      const fetchBurgers = async () => {
+        try {
+          const burgersList = await loadBurgers.loadAll();
+          setBurgers(burgersList);
+        } catch {
+          setError('Erro ao carregar os produtos. Tente novamente mais tarde.');
+        }
+      };
+  
+      fetchBurgers();
+    }, []);
+    
     return (
         <div >
             <div className='w-full bg-black-primary'>
@@ -23,6 +45,43 @@ export const Home = () => {
             <h3 className="text-center mt-10 font-semibold text-xl">Seu lanche na hora certa</h3>
             <p className="text-center mt-4 ">Procurando uma refeição rápida e deliciosa? <br /> Você vai se surpreender com nossos snacks.</p>
             <p className="mt-10 text-center">SNACKS</p>
+
+            <div className="mt-10 px-4">
+                {
+                    error ?
+                    (
+                        <p className="text-center text-red-500 text-lg">{error}</p>
+                    )
+                    :
+                    (
+                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 max-w-[1200px] mx-auto">
+                            {
+                                burgers.map((burger) => (
+                                    <div key={burger.id} className="bg-white rounded-lg shadow-md overflow-hidden transition-transform transform hover:scale-105">
+                                        <img
+                                            src={burger.image[0]}
+                                            alt={burger.title}
+                                            className="w-full h-48 object-cover"
+                                        />
+
+                                        <div className="p-4">
+                                            <h3 className="text-lg font-semibold text-gray-800">{burger.title}</h3>
+                                            <p className="text-gray-600 text-sm mt-2">{burger.description}</p>
+                                            <div className="flex justify-between mt-4">
+                                                <span className="text-green-500 font-semibold">
+                                                Single: R$ {burger.values.single}
+                                                </span>
+                                                <span className="text-green-500 font-semibold">
+                                                Combo: R$ {burger.values.combo}
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                ))}
+                        </div>
+                    )
+                }
+            </div>
         </div>
     )
 }
