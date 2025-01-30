@@ -1,6 +1,6 @@
 import { UnexpectedError } from "../../domain/errors/unexpectedError";
-import { Appetizer } from "../../domain/model/appetizer";
-import { LoadAppetizers } from "../../domain/usecases/loadAppetizers";
+import type { Appetizer } from "../../domain/model/appetizer";
+import type { LoadAppetizers } from "../../domain/usecases/loadAppetizers";
 import { HttpClient, HttpMethod, HttpResponse, HttpStatusCode } from "../protocols/http";
 
 export class RemoteLoadAppetizers implements LoadAppetizers{
@@ -9,7 +9,7 @@ export class RemoteLoadAppetizers implements LoadAppetizers{
         private readonly http : HttpClient
     ){}
 
-    async loadAppetizers(): Promise<Appetizer> {
+    async loadAppetizers(): Promise<Appetizer[]> {
         const response :  HttpResponse = await this.http.request({
             url : this.url,
             method : HttpMethod.GET
