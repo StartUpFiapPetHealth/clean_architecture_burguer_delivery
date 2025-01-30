@@ -4,5 +4,5 @@ import { AxiosHttpClient, makeAxiosHttpClient } from "../../../infra/axiosHttpCl
 import { makeApiUrl } from "../../../infra/http/apiUrlFactory";
 
 export const makeLoadPaymentOptions = () : LoadPaymentOptions => new RemotePaymentOption(
-    makeApiUrl("payment/options"), makeAxiosHttpClient()
+    makeApiUrl("/payment/options"), makeAxiosHttpClient()
 );
