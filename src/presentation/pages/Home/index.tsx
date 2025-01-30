@@ -5,6 +5,7 @@ import type { Burger } from "../../../domain/model/burger";
 import type { LoadBurgers } from "../../../domain/usecases/loadBurgers";
 import { UnexpectedError } from "../../../domain/errors/unexpectedError";
 import { AppError } from "../../../domain/errors/appError";
+import { Layout } from "../../Layout";
 
 interface IHomeProps {
 	loadBurgers: LoadBurgers;
@@ -14,28 +15,27 @@ export const Home: React.FC<IHomeProps> = ({ loadBurgers }) => {
 	const [burgers, setBurgers] = useState<Burger[]>([]);
 	const [error, setError] = useState("");
 
-    const fetchBurgers = useCallback(async () => {
-        try {
-            const burgersList = await loadBurgers.loadAll();
-            setBurgers(burgersList);
-        } catch (error) {
-            if(error instanceof AppError) {
-                setError(error.message)
-                return;
-            }
+	const fetchBurgers = useCallback(async () => {
+		try {
+			const burgersList = await loadBurgers.loadAll();
+			setBurgers(burgersList);
+		} catch (error) {
+			if (error instanceof AppError) {
+				setError(error.message);
+				return;
+			}
 
-            setError(new UnexpectedError().message)
+			setError(new UnexpectedError().message);
+		}
+	}, [loadBurgers]);
 
-        }
-    },[loadBurgers])
-
-    
 	useEffect(() => {
+		
 		fetchBurgers();
 	}, [fetchBurgers]);
 
 	return (
-		<div>
+		<Layout>
 			<div className="w-full bg-black-primary">
 				<div className="w-full p-10  max-w-[1200px] mx-auto">
 					<h1 className="text-white text-4xl font-semibold mb-10 text-center md:text-left">
@@ -65,7 +65,7 @@ export const Home: React.FC<IHomeProps> = ({ loadBurgers }) => {
 				Procurando uma refeição rápida e deliciosa? <br /> Você vai se
 				surpreender com nossos snacks.
 			</p>
-			<BurgerList  burgers={burgers} error={error}/>
-		</div>
+			<BurgerList burgers={burgers} error={error} />
+		</Layout>
 	);
 };

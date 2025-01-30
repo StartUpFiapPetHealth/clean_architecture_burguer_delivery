@@ -1,10 +1,8 @@
-export interface Burger {
-    id: number;
-    image: string[];
-    title: string;
-    description: string;
-    values: {
-        single: number;
-        combo: number;
-    };
+import type { Item } from "./item";
+
+export interface Burger extends Item {
+	values: {
+		single: number;
+		combo: number;
+	};
 }
