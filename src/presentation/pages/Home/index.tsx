@@ -3,15 +3,21 @@ import banner from "../../../assets/banner.png";
 import { BurgerList } from "./components/BurgerList";
 import type { Burger } from "../../../domain/model/burger";
 import type { LoadBurgers } from "../../../domain/usecases/loadBurgers";
+import type { LoadAppetizers } from "../../../domain/usecases/loadAppetizers";
 import { UnexpectedError } from "../../../domain/errors/unexpectedError";
 import { AppError } from "../../../domain/errors/appError";
+import type { Appetizer } from "../../../domain/model/appetizer";
+import { AppetizerList } from "./components/AppetizersList";
 
 interface IHomeProps {
 	loadBurgers: LoadBurgers;
+	loadAppetizers: LoadAppetizers;
 }
 
-export const Home: React.FC<IHomeProps> = ({ loadBurgers }) => {
+export const Home: React.FC<IHomeProps> = ({ loadBurgers, loadAppetizers }) => {
 	const [burgers, setBurgers] = useState<Burger[]>([]);
+	const [appetizers, setAppetizers] = useState<Appetizer[]>([]);
+
 	const [error, setError] = useState("");
 
     const fetchBurgers = useCallback(async () => {
@@ -29,10 +35,29 @@ export const Home: React.FC<IHomeProps> = ({ loadBurgers }) => {
         }
     },[loadBurgers])
 
+	const fetchAppetizers = useCallback(async () => {
+        try {
+            const appetizersList = await loadAppetizers.loadAppetizers();
+            setAppetizers(appetizersList);
+        } catch (error) {
+            if(error instanceof AppError) {
+                setError(error.message)
+                return;
+            }
+
+            setError(new UnexpectedError().message)
+
+        }
+    },[loadAppetizers])
+
     
 	useEffect(() => {
 		fetchBurgers();
 	}, [fetchBurgers]);
+
+	useEffect(() => {
+		fetchAppetizers();
+	}, [fetchAppetizers]);
 
 	return (
 		<div>
@@ -66,6 +91,7 @@ export const Home: React.FC<IHomeProps> = ({ loadBurgers }) => {
 				surpreender com nossos snacks.
 			</p>
 			<BurgerList  burgers={burgers} error={error}/>
+			<AppetizerList  appetizers={appetizers} error={error}/>
 		</div>
 	);
 };
