@@ -9,6 +9,7 @@ export const Layout = ({ children }: { children: React.ReactNode }) => {
 
 	return (
 		<div>
+            {/* <div className="fixed top-0 left-0 right-0 h-full w-full bg-black opacity-70 "/> */}
 			<div className="fixed top-0 right-0  w-[80%] md:max-w-[450px] bg-white h-full p-4">
 				<p className="text-xl">Carrinho</p>
 				<p>total:{cart.total}</p>
