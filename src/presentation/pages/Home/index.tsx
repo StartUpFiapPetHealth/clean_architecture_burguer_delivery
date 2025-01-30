@@ -11,17 +11,22 @@ import { AppetizerList } from "./components/AppetizersList";
 import type { Beverage } from "../../../domain/model/beverage";
 import { BeverageList } from "./components/BeveragesList";
 import type { LoadBeverages } from "../../../domain/usecases/loadBeverages";
+import type { LoadDesserts } from "../../../domain/usecases/loadDesserts";
+import { DessertList } from "./components/DessertsList";
+import type { Dessert } from "../../../domain/model/dessert";
 
 interface IHomeProps {
 	loadBurgers: LoadBurgers;
 	loadAppetizers: LoadAppetizers;
 	loadBeverages: LoadBeverages;
+	loadDesserts: LoadDesserts;
 }
 
-export const Home: React.FC<IHomeProps> = ({ loadBurgers, loadAppetizers, loadBeverages }) => {
+export const Home: React.FC<IHomeProps> = ({ loadBurgers, loadAppetizers, loadBeverages, loadDesserts }) => {
 	const [burgers, setBurgers] = useState<Burger[]>([]);
 	const [appetizers, setAppetizers] = useState<Appetizer[]>([]);
 	const [beverages, setBeverages] = useState<Beverage[]>([]);
+	const [desserts, setDesserts] = useState<Dessert[]>([]);
 
 	const [error, setError] = useState("");
 
@@ -70,6 +75,21 @@ export const Home: React.FC<IHomeProps> = ({ loadBurgers, loadAppetizers, loadBe
         }
     },[loadBeverages])
 
+	const fetchDesserts = useCallback(async () => {
+        try {
+            const dessertsList = await loadDesserts.loadDesserts();
+            setDesserts(dessertsList);
+        } catch (error) {
+            if(error instanceof AppError) {
+                setError(error.message)
+                return;
+            }
+
+            setError(new UnexpectedError().message)
+
+        }
+    },[loadDesserts])
+
 	useEffect(() => {
 		fetchBurgers();
 	}, [fetchBurgers]);
@@ -81,6 +101,10 @@ export const Home: React.FC<IHomeProps> = ({ loadBurgers, loadAppetizers, loadBe
 	useEffect(() => {
 		fetchBeverages();
 	}, [fetchBeverages]);
+
+	useEffect(() => {
+		fetchDesserts();
+	}, [fetchDesserts]);
 
 	return (
 		<div>
@@ -116,6 +140,7 @@ export const Home: React.FC<IHomeProps> = ({ loadBurgers, loadAppetizers, loadBe
 			<BurgerList  burgers={burgers} error={error}/>
 			<AppetizerList  appetizers={appetizers} error={error}/>
 			<BeverageList  beverages={beverages} error={error}/>
+			<DessertList  desserts={desserts} error={error}/>
 		</div>
 	);
 };
