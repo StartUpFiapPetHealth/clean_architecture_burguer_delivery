@@ -1,6 +1,6 @@
 import { RemotePaymentOption } from "../../../data/usecases/remoteLoadPaymentOptions";
 import { LoadPaymentOptions } from "../../../domain/usecases/loadPaymentOptions";
-import { AxiosHttpClient, makeAxiosHttpClient } from "../../../infra/axiosHttpClient/axiosHttpClientFactory";
+import { makeAxiosHttpClient } from "../../../infra/axiosHttpClient/axiosHttpClientFactory";
 import { makeApiUrl } from "../../../infra/http/apiUrlFactory";
 
 export const makeLoadPaymentOptions = () : LoadPaymentOptions => new RemotePaymentOption(
