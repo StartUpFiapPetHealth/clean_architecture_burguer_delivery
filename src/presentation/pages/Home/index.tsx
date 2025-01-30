@@ -14,6 +14,7 @@ import type { LoadBeverages } from "../../../domain/usecases/loadBeverages";
 import type { LoadDesserts } from "../../../domain/usecases/loadDesserts";
 import { DessertList } from "./components/DessertsList";
 import type { Dessert } from "../../../domain/model/dessert";
+import { Layout } from "../../Layout";
 
 interface IHomeProps {
 	loadBurgers: LoadBurgers;
@@ -30,20 +31,19 @@ export const Home: React.FC<IHomeProps> = ({ loadBurgers, loadAppetizers, loadBe
 
 	const [error, setError] = useState("");
 
-    const fetchBurgers = useCallback(async () => {
-        try {
-            const burgersList = await loadBurgers.loadAll();
-            setBurgers(burgersList);
-        } catch (error) {
-            if(error instanceof AppError) {
-                setError(error.message)
-                return;
-            }
+	const fetchBurgers = useCallback(async () => {
+		try {
+			const burgersList = await loadBurgers.loadAll();
+			setBurgers(burgersList);
+		} catch (error) {
+			if (error instanceof AppError) {
+				setError(error.message);
+				return;
+			}
 
-            setError(new UnexpectedError().message)
-
-        }
-    },[loadBurgers])
+			setError(new UnexpectedError().message);
+		}
+	}, [loadBurgers]);
 
 	const fetchAppetizers = useCallback(async () => {
         try {
@@ -107,7 +107,7 @@ export const Home: React.FC<IHomeProps> = ({ loadBurgers, loadAppetizers, loadBe
 	}, [fetchDesserts]);
 
 	return (
-		<div>
+		<Layout>
 			<div className="w-full bg-black-primary">
 				<div className="w-full p-10  max-w-[1200px] mx-auto">
 					<h1 className="text-white text-4xl font-semibold mb-10 text-center md:text-left">
@@ -141,6 +141,6 @@ export const Home: React.FC<IHomeProps> = ({ loadBurgers, loadAppetizers, loadBe
 			<AppetizerList  appetizers={appetizers} error={error}/>
 			<BeverageList  beverages={beverages} error={error}/>
 			<DessertList  desserts={desserts} error={error}/>
-		</div>
-	);
+		</Layout>
+	)
 };
