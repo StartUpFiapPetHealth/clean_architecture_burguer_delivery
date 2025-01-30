@@ -1,10 +1,8 @@
-export interface Appetizer {
-    id: number,
-    image: string,
-    title: string,
-    description: string,
-    values: {
-      small: number | null,
-      large: number | null,
-    },
+import type { Item } from "./item";
+
+export interface Appetizer extends Item {
+	values: {
+		small: number | null;
+		large: number | null;
+	};
 }

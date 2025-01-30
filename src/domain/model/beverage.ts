@@ -1,9 +1,5 @@
-export interface Beverage{
-    
-    id: number,
-    image: string,
-    title: string,
-    description: string,
-    value: number,
-    
+import type { Item } from "./item";
+
+export interface Beverage extends Item {
+	value: number;
 }
