@@ -1,5 +1,5 @@
 import { RemoteLoadBeverages } from "../../../data/usecases/remoteLoadBeverages";
-import { LoadBeverages } from "../../../domain/usecases/loadBeverages";
+import type { LoadBeverages } from "../../../domain/usecases/loadBeverages";
 import { makeAxiosHttpClient } from "../../../infra/axiosHttpClient/axiosHttpClientFactory";
 import { makeApiUrl } from "../../../infra/http/apiUrlFactory";
 

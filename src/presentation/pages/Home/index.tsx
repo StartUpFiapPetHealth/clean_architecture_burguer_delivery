@@ -8,15 +8,20 @@ import { UnexpectedError } from "../../../domain/errors/unexpectedError";
 import { AppError } from "../../../domain/errors/appError";
 import type { Appetizer } from "../../../domain/model/appetizer";
 import { AppetizerList } from "./components/AppetizersList";
+import type { Beverage } from "../../../domain/model/beverage";
+import { BeverageList } from "./components/BeveragesList";
+import type { LoadBeverages } from "../../../domain/usecases/loadBeverages";
 
 interface IHomeProps {
 	loadBurgers: LoadBurgers;
 	loadAppetizers: LoadAppetizers;
+	loadBeverages: LoadBeverages;
 }
 
-export const Home: React.FC<IHomeProps> = ({ loadBurgers, loadAppetizers }) => {
+export const Home: React.FC<IHomeProps> = ({ loadBurgers, loadAppetizers, loadBeverages }) => {
 	const [burgers, setBurgers] = useState<Burger[]>([]);
 	const [appetizers, setAppetizers] = useState<Appetizer[]>([]);
+	const [beverages, setBeverages] = useState<Beverage[]>([]);
 
 	const [error, setError] = useState("");
 
@@ -50,7 +55,21 @@ export const Home: React.FC<IHomeProps> = ({ loadBurgers, loadAppetizers }) => {
         }
     },[loadAppetizers])
 
-    
+	const fetchBeverages = useCallback(async () => {
+        try {
+            const beveragesList = await loadBeverages.loadBeverages();
+            setBeverages(beveragesList);
+        } catch (error) {
+            if(error instanceof AppError) {
+                setError(error.message)
+                return;
+            }
+
+            setError(new UnexpectedError().message)
+
+        }
+    },[loadBeverages])
+
 	useEffect(() => {
 		fetchBurgers();
 	}, [fetchBurgers]);
@@ -58,6 +77,10 @@ export const Home: React.FC<IHomeProps> = ({ loadBurgers, loadAppetizers }) => {
 	useEffect(() => {
 		fetchAppetizers();
 	}, [fetchAppetizers]);
+
+	useEffect(() => {
+		fetchBeverages();
+	}, [fetchBeverages]);
 
 	return (
 		<div>
@@ -92,6 +115,7 @@ export const Home: React.FC<IHomeProps> = ({ loadBurgers, loadAppetizers }) => {
 			</p>
 			<BurgerList  burgers={burgers} error={error}/>
 			<AppetizerList  appetizers={appetizers} error={error}/>
+			<BeverageList  beverages={beverages} error={error}/>
 		</div>
 	);
 };
