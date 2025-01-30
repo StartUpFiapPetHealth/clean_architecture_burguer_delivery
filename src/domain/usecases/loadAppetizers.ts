@@ -1,5 +1,5 @@
-import { Appetizer } from "../model/appetizer";
+import type { Appetizer } from "../model/appetizer";
 
-export interface LoadAppetizers{
-    loadAppetizers() : Promise<Appetizer>;
+export interface LoadAppetizers {
+	loadAppetizers(): Promise<Appetizer>;
 }

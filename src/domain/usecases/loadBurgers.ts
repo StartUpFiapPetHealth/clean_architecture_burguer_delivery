@@ -1,14 +1,5 @@
-export interface Burger {
-    id: number;
-    image: string[];
-    title: string;
-    description: string;
-    values: {
-        single: number;
-        combo: number;
-    };
-}
+import type { Burger } from "../model/burger";
 
 export interface LoadBurgers {
-    loadAll(): Promise<Burger[]>;
+	loadAll(): Promise<Burger[]>;
 }
