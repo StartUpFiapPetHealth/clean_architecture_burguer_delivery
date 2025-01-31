@@ -7,7 +7,7 @@ interface ISidebarProps {
     onClose: (value:boolean) => void
 }
 export const Sidebar:React.FC<ISidebarProps> = ({ onClose}) => {
-	const { cart } = useCartContext();
+	const { cart, handleResetCart } = useCartContext();
     const navigate = useNavigate()
 	return (
 		<>
@@ -23,7 +23,11 @@ export const Sidebar:React.FC<ISidebarProps> = ({ onClose}) => {
 						<CartItemCard key={item.data.id} item={item} />
 					))}
 				</div>
-                <p className="text-2xl font-semibold">total:{showCurrency(cart.total)}</p>
+                <div className="flex justify-between">
+                    <p className="text-2xl font-semibold">Total:{showCurrency(cart.total)}</p>
+                <button className="text-blue-500" onClick={() => handleResetCart()} type="button">Limpar carrinho</button>
+
+                </div>
 				<div className="flex flex-col mt-4 gap-2">
 					<button
                         onClick={() => navigate('/checkout')}
@@ -39,6 +43,7 @@ export const Sidebar:React.FC<ISidebarProps> = ({ onClose}) => {
 					>
 						Cancelar
 					</button>
+
 				</div>
 			</div>
 		</>

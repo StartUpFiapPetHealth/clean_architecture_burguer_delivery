@@ -13,7 +13,7 @@ export const CartItemCard = ({
 	variant = "cart",
 }: ICartItemCardProps) => {
 	let images = [];
-	const { handleDecrementItem, handleIncrementItem, handleDeleteItemFromCart } = useCartContext();
+	const { handleDecrementItem, handleIncrementItem } = useCartContext();
 	const totalValue = item?.value * item.quantity;
 	const itemValue = variant === "cart" ? item.value : totalValue;
 
@@ -50,15 +50,12 @@ export const CartItemCard = ({
 									onDecrement={() => handleDecrementItem(item)}
 									value={item.quantity}
 								/>
-								<button onClick={() => handleDeleteItemFromCart(item)} type="button" className="bg-red-800 h-[20px] w-[20px] mt-auto flex items-center justify-center rounded-md">
-									<Trash size={14}  color="white"/>
-								</button>
 							</div>
 						)}
 
 						{variant === "checkout" && <span>Qtd: {item.quantity}</span>}
 						{variant === "cart" && (
-							<span className="mt-4 text-sm font-semibold">
+                            <span className="mt-4 text-sm font-semibold">
 								Total: {showCurrency(totalValue)}
 							</span>
 						)}
