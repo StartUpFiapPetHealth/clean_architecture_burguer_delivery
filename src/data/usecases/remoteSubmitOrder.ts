@@ -15,14 +15,15 @@ export class RemoteSubmitOrder implements SubmitOrder {
 		private readonly http: HttpClient,
 	) {}
 
-	async submit(param: OrderParam): Promise<OrderResponse> {
+	async submit(param: OrderParam, headers: object): Promise<OrderResponse> {
 		const response: HttpResponse = await this.http.request({
 			url: this.url,
 			method: HttpMethod.POST,
 			body: param,
+            headers
 		});
 
-		if (response.statusCode === HttpStatusCode.created) return response.body;
+		if (response.statusCode === HttpStatusCode.ok) return response.body;
 
 		throw new UnexpectedError(); 
 	}

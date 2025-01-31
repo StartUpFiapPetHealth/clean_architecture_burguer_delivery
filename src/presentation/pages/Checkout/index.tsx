@@ -1,18 +1,34 @@
 import { useCallback, useEffect, useState } from "react";
 import { CartItemCard } from "../../components/CartItemCard";
 import { useCartContext } from "../../context/cart";
+import { SignInModal } from "../../containers/SignInModal";
+import { showCurrency } from "../../../utils/showCurrency";
 import type { LoadPaymentOptions } from "../../../domain/usecases/loadPaymentOptions";
 import type { PaymentOption } from "../../../domain/model/paymentOption";
-import { showCurrency } from "../../../utils/showCurrency";
-import { SignInModal } from "../../containers/SignInModal";
+import type { Authentication } from "../../../domain/usecases/authentication";
+import type { SubmitOrder } from "../../../domain/usecases/submitOrder";
+import type { StorageAdapter } from "../../../infra/cache/storageAdapter";
+import { useNavigate } from "react-router-dom";
 
 interface ICheckoutProps {
 	loadPaymentOptions: LoadPaymentOptions;
+	authentication: Authentication;
+	submitOrder: SubmitOrder;
+	storage: StorageAdapter;
 }
-export const Checkout: React.FC<ICheckoutProps> = ({ loadPaymentOptions }) => {
+export const Checkout: React.FC<ICheckoutProps> = ({
+	loadPaymentOptions,
+	authentication,
+	submitOrder,
+	storage,
+}) => {
 	const [paymentOptions, setPaymentOptions] = useState<PaymentOption[]>([]);
-    const [signInModalIsOpen,setSignInModalIsOpen] = useState(false)
+	const [signInModalIsOpen, setSignInModalIsOpen] = useState(false);
+	const [chosenOption, setChosenOption] = useState("");
+
 	const { items, cart } = useCartContext();
+
+	const navigate = useNavigate();
 
 	const fetchPaymentOptions = useCallback(async () => {
 		try {
@@ -24,6 +40,38 @@ export const Checkout: React.FC<ICheckoutProps> = ({ loadPaymentOptions }) => {
 	useEffect(() => {
 		fetchPaymentOptions();
 	}, [fetchPaymentOptions]);
+
+	const handleSubmitOrder = async () => {
+		const payloadItems = items.map((item) => ({
+			value: item.value,
+			title: item.data.title,
+		}));
+		try {
+			await submitOrder.submit(
+				{
+					items: payloadItems,
+					paymentOption: chosenOption,
+				},
+				{
+					Authorization: `Bearer ${storage.get("@delivery_burger")}`,
+				},
+			);
+
+			alert("Pedido feito com sucesso!");
+			setSignInModalIsOpen(false);
+			navigate("/");
+		} catch (error) {
+			console.error(error);
+			alert("Erro ao realizar o pedido. Tente novamente mais tarde.");
+		}
+	};
+
+	const handleSubmit = () => {
+		const isAuthenticated = storage.get("@delivery_burger");
+		if (isAuthenticated) return handleSubmitOrder();
+
+		setSignInModalIsOpen(true);
+	};
 
 	return (
 		<div className="p-4">
@@ -42,8 +90,9 @@ export const Checkout: React.FC<ICheckoutProps> = ({ loadPaymentOptions }) => {
 								<input
 									id="default-radio-1"
 									type="radio"
-									value=""
+									value={option.id}
 									name="default-radio"
+									onClick={() => setChosenOption(option.id)}
 									className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300  dark:bg-gray-700 dark:border-gray-600"
 								/>
 								<label
@@ -58,13 +107,24 @@ export const Checkout: React.FC<ICheckoutProps> = ({ loadPaymentOptions }) => {
 					<h3 className="mt-8 font-semibold text-2xl">
 						Total: {showCurrency(cart.total)}
 					</h3>
-					<button onClick={() => setSignInModalIsOpen(true)} type="button" className="bg-black px-8 py-2 text-white mt-4">
+					<button
+						onClick={handleSubmit}
+						type="button"
+						className="bg-black px-8 py-2 text-white mt-4"
+					>
 						Finalizar pedido
 					</button>
 				</div>
 			</div>
 
-            {signInModalIsOpen && <SignInModal/>}
+			{signInModalIsOpen && (
+				<SignInModal
+					onClose={() => setSignInModalIsOpen(false)}
+					onSuccess={() => handleSubmitOrder()}
+					onHandleSubmit={authentication}
+					storage={storage}
+				/>
+			)}
 		</div>
 	);
 };
