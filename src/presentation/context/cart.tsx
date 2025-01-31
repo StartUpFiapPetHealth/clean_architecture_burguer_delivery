@@ -20,8 +20,8 @@ interface CartContext {
 		items: Map<number, CartItem>;
 		total: number;
 	};
-
 	addItemToCart: (item: CartItem) => void;
+	items: CartItem[]
 }
 
 const Context = createContext({} as CartContext);
@@ -88,6 +88,7 @@ const CartContextProvider = ({ children }: { children: React.ReactNode }) => {
 			addItemToCart,
 			removeItemFromCart,
 			cart,
+			items: Array.from(cart.items.entries()).map(([_key, item]) => item)
 		}),
 		[addItemToCart, removeItemFromCart, cart],
 	);
