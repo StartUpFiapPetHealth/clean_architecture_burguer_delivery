@@ -10,7 +10,7 @@ export const Layout = ({ children }: { children: React.ReactNode }) => {
 		<div>
             <Header onClickCart={() => setSidebarIsOpen(true)}/>
             {sidebarIsOpen && (
-                <Sidebar open={sidebarIsOpen} onClose={() => setSidebarIsOpen(false)}/>
+                <Sidebar onClose={() => setSidebarIsOpen(false)}/>
             )}
 			<main>{children}</main>
 		</div>

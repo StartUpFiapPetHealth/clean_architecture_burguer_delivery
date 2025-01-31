@@ -26,7 +26,7 @@ export const Checkout: React.FC<ICheckoutProps> = ({
 	const [signInModalIsOpen, setSignInModalIsOpen] = useState(false);
 	const [chosenOption, setChosenOption] = useState("");
 
-	const { items, cart, handleResetCart } = useCartContext();
+	const { cart, handleResetCart } = useCartContext();
 
 	const navigate = useNavigate();
 
@@ -42,7 +42,7 @@ export const Checkout: React.FC<ICheckoutProps> = ({
 	}, [fetchPaymentOptions]);
 
 	const handleSubmitOrder = async () => {
-		const payloadItems = items.map((item) => ({
+		const payloadItems = cart.items.map((item) => ({
 			value: item.value,
 			title: item.data.title,
 		}));
@@ -79,7 +79,7 @@ export const Checkout: React.FC<ICheckoutProps> = ({
 			<h2 className="mb-4">Checkout</h2>
 			<div className="grid grid-cols-2 gap-4">
 				<div className="flex flex-col gap-4">
-					{items.map((item) => (
+					{cart.items.map((item) => (
 						<CartItemCard variant="checkout" key={item.data.id} item={item} />
 					))}
 				</div>

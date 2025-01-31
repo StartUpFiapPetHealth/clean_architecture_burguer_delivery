@@ -33,7 +33,7 @@ interface CartContext {
 	handleDecrementItem: (item: CartItem) => void;
 	handleIncrementItem: (item: CartItem) => void;
 	handleResetCart: () => void;
-	items: CartItem[];
+	handleDeleteItemFromCart: (item: CartItem) => void;
 }
 
 const Context = createContext({} as CartContext);
@@ -54,7 +54,7 @@ const CartContextProvider = ({ children }: { children: React.ReactNode }) => {
 	});
 
 	useEffect(() => {
-		sessionStorage.setItem("cart", JSON.stringify({...cart, items: Array.from(cart.items)}));
+		sessionStorage.setItem("cart", JSON.stringify(cart));
 	}, [cart]);
 
 	const handleIncrementItem = useCallback(
@@ -62,7 +62,7 @@ const CartContextProvider = ({ children }: { children: React.ReactNode }) => {
 			const updatedCart = cart;
 			item.quantity = item.quantity + 1;
 			updatedCart.total = updatedCart.total + item.value;
-			updatedCart.items.map(el => el.data.id === item.data.id && el.value === item.value ? item : el);
+			updatedCart.items.map(el => el.data.id === item.data.id &&  item.type === el.type ? item : el);
 			setCart(() => ({ items: updatedCart.items, total: updatedCart.total }));
 		},
 		[cart],
@@ -73,7 +73,7 @@ const CartContextProvider = ({ children }: { children: React.ReactNode }) => {
 			const updatedCart = cart;
 			item.quantity = item.quantity - 1;
 			updatedCart.total = updatedCart.total - item.value;
-			updatedCart.items.map(el => el.data.id === item.data.id && el.value === item.value ? item : el);
+			updatedCart.items.map(el => el.data.id === item.data.id && item.type === el.type ? item : el);
 			setCart(() => ({ items: updatedCart.items, total: updatedCart.total }));
 		},
 		[cart],
@@ -86,7 +86,7 @@ const CartContextProvider = ({ children }: { children: React.ReactNode }) => {
 				data: { id },
 			} = item;
 
-			const findItem = cart.items.find(item => item?.data?.id === id)
+			const findItem = cart.items.find(el => el?.data?.id === id && item.type === el.type)
 
 			alert(`${item.data.title} ${item.type ? TYPES[item.type] : ''} adicionado ao carrinho.`);
 
@@ -106,21 +106,6 @@ const CartContextProvider = ({ children }: { children: React.ReactNode }) => {
 		[cart, handleIncrementItem],
 	);
 
-	const removeItemFromCart = useCallback(
-		(itemId: CartItem["data"]["id"]) => {
-			const updatedCart = cart;
-
-			const findItem = updatedCart.items.find(item => itemId === item.data.id);
-
-			if (!findItem) return;
-
-			updatedCart.total -= findItem.value * findItem.quantity;
-			updatedCart.items.filter(item => item.data.id !== itemId);
-			setCart(updatedCart);
-		},
-		[cart],
-	);
-
 	const handleResetCart = useCallback(() => {
 		setCart({	
 			items: [],
@@ -128,23 +113,34 @@ const CartContextProvider = ({ children }: { children: React.ReactNode }) => {
 		})
 	},[])
 
+	const handleDeleteItemFromCart = useCallback((item:CartItem) => {
+		const updatedCart = cart;
+		updatedCart.total = updatedCart.total - (item.value * item.quantity);
+		updatedCart.items = updatedCart.items.filter(el => el.data.id === item.data.id && item.type !== el.type);
+	
+		setCart(() => ({
+			total: updatedCart.total,
+			items: updatedCart.items,
+		}));
+	},[cart])
+	
+
 	const values = useMemo(
 		() => ({
 			addItemToCart,
-			removeItemFromCart,
 			handleDecrementItem,
 			handleIncrementItem,
 			cart,
-			items: cart.items,
 			handleResetCart,
+			handleDeleteItemFromCart
 		}),
 		[
 			cart,
 			addItemToCart,
-			removeItemFromCart,
 			handleDecrementItem,
 			handleIncrementItem,
 			handleResetCart,
+			handleDeleteItemFromCart
 		],
 	);
 

@@ -15,7 +15,7 @@ export const QuantityInput: React.FC<IQuantityInputProps> = ({
 	...props
 }) => {
 	return (
-		<>
+		<div>
 			<label
 				htmlFor="counter-input"
 				className="block mb-1 text-sm font-medium text-gray-900 "
@@ -81,6 +81,6 @@ export const QuantityInput: React.FC<IQuantityInputProps> = ({
 					</svg>
 				</button>
 			</div>
-		</>
+		</div>
 	);
 };

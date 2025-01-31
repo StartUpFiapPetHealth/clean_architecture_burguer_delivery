@@ -4,11 +4,10 @@ import { useNavigate } from "react-router-dom";
 import { showCurrency } from "../../../utils/showCurrency";
 
 interface ISidebarProps {
-    open: boolean,
     onClose: (value:boolean) => void
 }
-export const Sidebar:React.FC<ISidebarProps> = ({open, onClose}) => {
-	const { cart, items } = useCartContext();
+export const Sidebar:React.FC<ISidebarProps> = ({ onClose}) => {
+	const { cart } = useCartContext();
     const navigate = useNavigate()
 	return (
 		<>
@@ -20,7 +19,7 @@ export const Sidebar:React.FC<ISidebarProps> = ({open, onClose}) => {
 			<div className="fixed top-0 right-0  w-[80%] md:max-w-[450px] bg-white h-full p-4">
 				<p className="text-xl mb-4">Carrinho</p>
 				<div className="flex pr-4 flex-col gap-4 overflow-auto h-[70vh]">
-					{items.map((item) => (
+					{cart.items.map((item) => (
 						<CartItemCard key={item.data.id} item={item} />
 					))}
 				</div>
