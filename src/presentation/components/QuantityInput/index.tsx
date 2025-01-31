@@ -1,22 +1,19 @@
 import type React from "react";
-import { useState, type HTMLAttributes } from "react";
+import type { InputHTMLAttributes } from "react";
 
-interface IQuantityInputProps extends HTMLAttributes<HTMLInputElement> {
+interface IQuantityInputProps extends InputHTMLAttributes<HTMLInputElement> {
 	label: string;
+    onIncrement: () => void,
+    onDecrement: () => void,
 }
 
-export const QuantityInput: React.FC<IQuantityInputProps> = ({ label, ...props }) => {
-    const [value, setValue] = useState<number>(Number(props.defaultValue) ?? 0)
-
-    const handleIncrement = () => {
-        if(value === 0) return;
-        setValue(old => old + 1)
-    }
-
-    const handleDecrement = () => {
-        setValue(old => old - 1)
-    }
-
+export const QuantityInput: React.FC<IQuantityInputProps> = ({
+	label,
+	value,
+    onIncrement,
+    onDecrement,
+	...props
+}) => {
 	return (
 		<>
 			<label
@@ -27,10 +24,10 @@ export const QuantityInput: React.FC<IQuantityInputProps> = ({ label, ...props }
 			</label>
 			<div className="relative flex items-center">
 				<button
-                    disabled={value === 1}
+					disabled={value === 1}
 					type="button"
 					id="decrement-button"
-                    onClick={handleDecrement}
+					onClick={onDecrement}
 					data-input-counter-decrement="counter-input"
 					className="shrink-0 bg-gray-700 disabled:bg-gray-300   inline-flex items-center justify-center border border-gray-300 rounded-md h-5 w-5 focus:ring-gray-100 focus:outline-none"
 				>
@@ -57,13 +54,13 @@ export const QuantityInput: React.FC<IQuantityInputProps> = ({ label, ...props }
 					className="shrink-0 text-gray-900  border-0 bg-transparent text-sm font-normal focus:outline-none focus:ring-0 max-w-[2.5rem] text-center"
 					placeholder=""
 					required
-                    value={value}
-                    {...props}
+					value={value}
+					{...props}
 				/>
 				<button
 					type="button"
 					id="increment-button"
-                    onClick={handleIncrement}
+					onClick={onIncrement}
 					data-input-counter-increment="counter-input"
 					className="shrink-0 bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600 dark:border-gray-600 hover:bg-gray-200 inline-flex items-center justify-center border border-gray-300 rounded-md h-5 w-5 focus:ring-gray-100 dark:focus:ring-gray-700 focus:ring-2 focus:outline-none"
 				>

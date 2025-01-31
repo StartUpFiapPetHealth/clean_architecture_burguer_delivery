@@ -26,7 +26,7 @@ export const Checkout: React.FC<ICheckoutProps> = ({
 	const [signInModalIsOpen, setSignInModalIsOpen] = useState(false);
 	const [chosenOption, setChosenOption] = useState("");
 
-	const { items, cart } = useCartContext();
+	const { items, cart, handleResetCart } = useCartContext();
 
 	const navigate = useNavigate();
 
@@ -58,6 +58,7 @@ export const Checkout: React.FC<ICheckoutProps> = ({
 			);
 
 			alert("Pedido feito com sucesso!");
+            handleResetCart()
 			setSignInModalIsOpen(false);
 			navigate("/");
 		} catch (error) {

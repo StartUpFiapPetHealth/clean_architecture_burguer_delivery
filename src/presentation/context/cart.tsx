@@ -4,40 +4,76 @@ import {
 	createContext,
 	useCallback,
 	useContext,
+	useEffect,
 	useMemo,
 	useState,
 } from "react";
 import type { Item } from "../../domain/model/item";
 
+export enum TYPES  {
+	'combo'=  'Combo',
+	'single' = 'Lanche',
+	'large' = 'Grande',
+	'small' = 'Pequena'
+}
+
 export type CartItem = {
 	value: number;
 	quantity: number;
 	data: Item;
+	type?: 'combo' | 'single' | 'large' | 'small'
 };
 
 interface CartContext {
 	cart: {
-		items: Map<number, CartItem>;
+		items: CartItem[];
 		total: number;
 	};
 	addItemToCart: (item: CartItem) => void;
-	items: CartItem[]
+	handleDecrementItem: (item: CartItem) => void;
+	handleIncrementItem: (item: CartItem) => void;
+	handleResetCart: () => void;
+	items: CartItem[];
 }
 
 const Context = createContext({} as CartContext);
 
 const CartContextProvider = ({ children }: { children: React.ReactNode }) => {
-	const [cart, setCart] = useState<CartContext["cart"]>({
-		items: new Map(),
-		total: 0,
+	const [cart, setCart] = useState<CartContext["cart"]>(() => {
+		const cartFromStorage = sessionStorage.getItem("cart");
+
+		if (cartFromStorage) return  {
+			items: JSON.parse(cartFromStorage).items,
+			total: JSON.parse(cartFromStorage).total,
+		};
+
+		return {
+			items: [],
+			total: 0,
+		};
 	});
 
-	const updateItem = useCallback(
+	useEffect(() => {
+		sessionStorage.setItem("cart", JSON.stringify({...cart, items: Array.from(cart.items)}));
+	}, [cart]);
+
+	const handleIncrementItem = useCallback(
 		(item: CartItem) => {
 			const updatedCart = cart;
-			item.quantity += 1;
+			item.quantity = item.quantity + 1;
 			updatedCart.total = updatedCart.total + item.value;
-			updatedCart.items.set(item.data.id, item);
+			updatedCart.items.map(el => el.data.id === item.data.id && el.value === item.value ? item : el);
+			setCart(() => ({ items: updatedCart.items, total: updatedCart.total }));
+		},
+		[cart],
+	);
+
+	const handleDecrementItem = useCallback(
+		(item: CartItem) => {
+			const updatedCart = cart;
+			item.quantity = item.quantity - 1;
+			updatedCart.total = updatedCart.total - item.value;
+			updatedCart.items.map(el => el.data.id === item.data.id && el.value === item.value ? item : el);
 			setCart(() => ({ items: updatedCart.items, total: updatedCart.total }));
 		},
 		[cart],
@@ -50,47 +86,66 @@ const CartContextProvider = ({ children }: { children: React.ReactNode }) => {
 				data: { id },
 			} = item;
 
-			const findItem = cart.items.get(id);
+			const findItem = cart.items.find(item => item?.data?.id === id)
 
-			if (findItem) {
-				updateItem(item);
+			alert(`${item.data.title} ${item.type ? TYPES[item.type] : ''} adicionado ao carrinho.`);
+
+			if (findItem && item.value === findItem.value) {
+				handleIncrementItem(findItem);
 				return;
 			}
 
 			const updateditems = cart.items;
-			updateditems.set(id, item);
+			updateditems.push(item);
 
 			setCart((old) => ({
 				total: old.total + value,
-				items: old.items.set(id, item),
+				items: updateditems,
 			}));
 		},
-		[cart, updateItem],
+		[cart, handleIncrementItem],
 	);
 
 	const removeItemFromCart = useCallback(
 		(itemId: CartItem["data"]["id"]) => {
 			const updatedCart = cart;
 
-			const findItem = updatedCart.items.get(itemId);
+			const findItem = updatedCart.items.find(item => itemId === item.data.id);
 
 			if (!findItem) return;
 
 			updatedCart.total -= findItem.value * findItem.quantity;
-			updatedCart.items.delete(itemId);
+			updatedCart.items.filter(item => item.data.id !== itemId);
 			setCart(updatedCart);
 		},
 		[cart],
 	);
 
+	const handleResetCart = useCallback(() => {
+		setCart({	
+			items: [],
+			total: 0
+		})
+	},[])
+
 	const values = useMemo(
 		() => ({
 			addItemToCart,
 			removeItemFromCart,
+			handleDecrementItem,
+			handleIncrementItem,
 			cart,
-			items: Array.from(cart.items.entries()).map(([_key, item]) => item)
+			items: cart.items,
+			handleResetCart,
 		}),
-		[addItemToCart, removeItemFromCart, cart],
+		[
+			cart,
+			addItemToCart,
+			removeItemFromCart,
+			handleDecrementItem,
+			handleIncrementItem,
+			handleResetCart,
+		],
 	);
 
 	return <Context.Provider value={values}>{children}</Context.Provider>;
