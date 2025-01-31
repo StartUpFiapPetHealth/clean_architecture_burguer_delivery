@@ -1,6 +1,6 @@
-import { Item } from "./item";
+import type { Item } from "./item";
 
-export interface OrderParam{
-    items : Item[],
-    paymentOption : string;
+export interface OrderParam {
+	items: Item[];
+	paymentOption: string;
 }

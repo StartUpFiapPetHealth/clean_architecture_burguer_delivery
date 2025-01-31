@@ -1,6 +1,5 @@
-import { PaymentOption } from "../model/paymentOption";
+import type { PaymentOption } from "../model/paymentOption";
 
-export interface LoadPaymentOptions{
-
-    loadPaymentOptions() : Promise<PaymentOption[]>;
+export interface LoadPaymentOptions {
+	loadPaymentOptions(): Promise<PaymentOption[]>;
 }
