@@ -32,6 +32,7 @@ interface CartContext {
 	addItemToCart: (item: CartItem) => void;
 	handleDecrementItem: (item: CartItem) => void;
 	handleIncrementItem: (item: CartItem) => void;
+	handleDeleteFromCart: (item: CartItem) => void;
 	handleResetCart: () => void;
 }
 
@@ -105,13 +106,24 @@ const CartContextProvider = ({ children }: { children: React.ReactNode }) => {
 		[cart, handleIncrementItem],
 	);
 
+	const handleDeleteFromCart = useCallback(
+		(item: CartItem) => {
+			const updatedItems = cart.items.filter( el => el !== item)
+			const updatedTotal = cart.total - (item.value * item.quantity)
+			setCart(() => ({
+				total: updatedTotal,
+				items: updatedItems,
+			}));
+		},
+		[cart],
+	);
+
 	const handleResetCart = useCallback(() => {
 		setCart({	
 			items: [],
 			total: 0
 		})
 	},[])
-
 
 
 	const values = useMemo(
@@ -121,6 +133,7 @@ const CartContextProvider = ({ children }: { children: React.ReactNode }) => {
 			handleIncrementItem,
 			cart,
 			handleResetCart,
+			handleDeleteFromCart
 		}),
 		[
 			cart,
@@ -128,6 +141,7 @@ const CartContextProvider = ({ children }: { children: React.ReactNode }) => {
 			handleDecrementItem,
 			handleIncrementItem,
 			handleResetCart,
+			handleDeleteFromCart
 		],
 	);
 

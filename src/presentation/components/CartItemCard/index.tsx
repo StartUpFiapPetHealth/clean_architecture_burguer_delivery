@@ -13,7 +13,7 @@ export const CartItemCard = ({
 	variant = "cart",
 }: ICartItemCardProps) => {
 	let images = [];
-	const { handleDecrementItem, handleIncrementItem } = useCartContext();
+	const { handleDecrementItem, handleIncrementItem, handleDeleteFromCart } = useCartContext();
 	const totalValue = item?.value * item.quantity;
 	const itemValue = variant === "cart" ? item.value : totalValue;
 
@@ -50,6 +50,7 @@ export const CartItemCard = ({
 									onDecrement={() => handleDecrementItem(item)}
 									value={item.quantity}
 								/>
+								<button onClick={() => handleDeleteFromCart(item)}>Del</button>
 							</div>
 						)}
 
