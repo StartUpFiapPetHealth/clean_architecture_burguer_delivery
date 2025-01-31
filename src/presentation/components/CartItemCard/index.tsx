@@ -50,7 +50,7 @@ export const CartItemCard = ({
 									onDecrement={() => handleDecrementItem(item)}
 									value={item.quantity}
 								/>
-								<button onClick={() => handleDeleteFromCart(item)}>Del</button>
+								<button type="button" className="mt-auto mb-[2px] flex justify-center items-center" onClick={() => handleDeleteFromCart(item)}><Trash size={16}/></button>
 							</div>
 						)}
 
